@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import LandingPageView, UsersLogoutView, UsersLoginView, UserRegisterView, ContactView, ProfileView
+from .views import LandingPageView, UserRegisterView, UsersLogoutView, UsersLoginView, ProfileView, ContactView
 
 urlpatterns = [
     path('', LandingPageView.as_view(), name='landing'),

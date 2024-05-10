@@ -78,9 +78,9 @@
                             <button class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search text-primary"></i></button>
                             <a href="#" class="position-relative me-4 my-auto">
                                 <i class="fa fa-shopping-bag fa-2x"></i>
-                                <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px;">3</span>
+                                <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px;">{{number_order}}</span>
                             </a>
-                            <a href="#" class="my-auto">
+                            <a href="{% url 'profile' %}" class="my-auto">
                                 <i class="fas fa-user fa-2x"></i>
                             </a>
                         </div>
@@ -171,9 +171,12 @@
                                     <p class="mb-0 mt-4">{{car.product.price}} {{car.product.price_type}}</p>
                                 </td>
                                 <td>
-                                    <button class="btn btn-md rounded-circle bg-light border mt-4" >
-                                        <i class="fa fa-times text-danger"></i>
-                                    </button>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-md rounded-circle bg-light border mt-4" >
+                                            <i class="fa fa-times text-danger"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -200,13 +203,13 @@
                                         <p class="mb-0">Flat rate: {{shipping_price}} {{product.price_type}}</p>
                                     </div>
                                 </div>
-                                <p class="mb-0 text-end">Tashkent</p>
+                                <p class="mb-0 text-end">Shipping to Uzbekistan.</p>
                             </div>
                             <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
                                 <h5 class="mb-0 ps-4 me-4">Total</h5>
                                 <p class="mb-0 pe-4">{{total_price_ship}} {{product.price_type}}</p>
                             </div>
-                            <button class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Proceed Checkout</button>
+                            <a href="{% url 'checkout' %}"><button class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Proceed Checkout</button></a>
                         </div>
                     </div>
                 </div>
@@ -283,7 +286,7 @@
                             <p>Email: Example@gmail.com</p>
                             <p>Phone: +0123 4567 8910</p>
                             <p>Payment Accepted</p>
-                            <img src="img/payment.png" class="img-fluid" alt="">
+                            <img src="{% static 'img/payment.png' %}" class="img-fluid" alt="">
                         </div>
                     </div>
                 </div>

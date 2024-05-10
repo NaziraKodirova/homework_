@@ -1,7 +1,5 @@
-
 from django.db import models
 from .help import SaveMediaFile
-# Create your models here.
 
 
 class Country(models.Model):
@@ -11,7 +9,6 @@ class Country(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class City(models.Model):
     name = models.CharField(max_length=50)
@@ -31,8 +28,7 @@ class Address(models.Model):
 
     def __str__(self):
         return self.name
-
-
+    
 class Customers(models.Model):
     first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=50, blank=True)
@@ -49,4 +45,3 @@ class Customers(models.Model):
 
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
-
