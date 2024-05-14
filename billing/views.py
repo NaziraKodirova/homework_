@@ -1,10 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import View
 from products.models import Cart, Comment
+from .models import Billing
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class CheckOutView(View):
+class CheckOutView(LoginRequiredMixin, View):
     def get(self, request):
-        cart = Cart.objects.filter(user=request.user.id)
+        cart = Cart.objects.filter(user=request.user, payment_status=False)
         user = request.user
         total_price = 0
         quantity = 0
@@ -18,9 +20,24 @@ class CheckOutView(View):
                 quantity = 1
         return render(request, 'vegetable_web/chackout.html', {"cart": cart, "user": user, "total_price": total_price, "quantity": quantity, "number_order": number_order})
 
-class TestimonialView(View):
+
+    def post(self, request):
+        shipping = request.POST.get("Shipping-1")
+        paypal = request.POST.get("Paypal")
+        payments = request.POST.get("Payments")
+        transfer = request.POST.get("Transfer")
+        delivery = request.POST.get("Delivery")
+        print(shipping, transfer, payments, delivery, paypal)
+        cart = Cart.objects.get(user=request.user)
+        cart.payment_status = True
+        cart.save()
+        billing = Billing.objects.create(cart=cart, payment_type=cart.product.price_type)
+        billing.save()
+        return redirect('landing')
+
+class TestimonialView(LoginRequiredMixin, View):
     def get(self, request):
-        cart = Cart.objects.filter(user=request.user.id)
+        cart = Cart.objects.filter(user=request.user)
         number_order = cart.count()
         comment = Comment.objects.all()
         return render(request, 'vegetable_web/testimonial.html', {'number_order': number_order, "comment": comment})

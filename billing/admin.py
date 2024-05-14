@@ -10,5 +10,6 @@ class BillingAdmin(ImportExportModelAdmin):
     list_filter = ('id', 'payment_type',)
     ordering = ('created_date',)
 
+
     def comments_text(self, obj):
-        return obj.comments[:15]
+        return obj.comments[:10]

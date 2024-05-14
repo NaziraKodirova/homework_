@@ -12,6 +12,8 @@ urlpatterns = [
     path('', include('billing.urls')),
     path('', include('customers.urls')),
     path('api/v1/', include('music.urls')),
+    path('api_f/v1/', include('rest_api.urls')),
+    path('api-auth/', include('rest_framework.urls')),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

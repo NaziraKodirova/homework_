@@ -1,10 +1,12 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.views import View
 from .models import Product, Category, Comment, Cart
 from customers.models import Customers
 from django.contrib.auth.models import User
 
-class ProductListView(View):
+
+class ProductListView(LoginRequiredMixin, View):
     def get(self, request):
         search = request.GET.get('search')
         print(search)
@@ -12,7 +14,7 @@ class ProductListView(View):
             products = Product.objects.all()
             categories = Category.objects.all()
             featured_products = Product.objects.all()
-            cart = Cart.objects.filter(user=request.user.id)
+            cart = Cart.objects.filter(user=request.user)
             number_order = cart.count()
             context = {'products': products,
                        "categories": categories,
@@ -24,7 +26,7 @@ class ProductListView(View):
             products = Product.objects.filter(title__icontains=search)
             featured_products = Product.objects.all()
             categories = Category.objects.all()
-            cart = Cart.objects.filter(user=request.user.id)
+            cart = Cart.objects.filter(user=request.user)
             number_order = cart.count()
             context = {'products': products,
                        "categories": categories,
@@ -33,8 +35,7 @@ class ProductListView(View):
                        }
             return render(request, 'vegetable_web/shop.html', context)
 
-
-class ProductDetailView(View):
+class ProductDetailView(LoginRequiredMixin, View):
     def get(self, request, id):
         if request.user.is_authenticated:
             product = Product.objects.get(id=id)
@@ -60,10 +61,10 @@ class ProductDetailView(View):
         else:
             return render(request, 'vegetable_web/shop-detail.html')
 
+
     def post(self, request, id):
         user = request.user
         text = request.POST.get('comment')
-
         comment = Comment.objects.create(text=text, customer=user)
         comment.save()
         product = Product.objects.get(id=id)
@@ -72,7 +73,7 @@ class ProductDetailView(View):
         featured_products = Product.objects.all()
         categories = Category.objects.all()
         comments = Comment.objects.all()
-        cart = Cart.objects.filter(user=request.user.id)
+        cart = Cart.objects.filter(user=request.user)
         number_order = cart.count()
         context = {
             'product': product,
@@ -84,28 +85,30 @@ class ProductDetailView(View):
         }
         return render(request, 'vegetable_web/shop-detail.html', context)
 
-
-class CartView(View):
+class CartView(LoginRequiredMixin, View):
     def get(self, request, id):
-        product = Product.objects.get(id=id)
-        user = request.user
-        Cart.objects.create(product=product, user=user)
-        total_price = 0
-        shipping_price = 0
-        for cart_product in Cart.objects.filter(user=request.user.id):
-            total_price += cart_product.product.price
-            shipping_price = cart_product.shipping_price
-        cart = Cart.objects.filter(user=request.user.id)
-        number_order = cart.count()
-        context = {
-            'product': product,
-            'cart': cart,
-            'number_order': number_order,
-            'total_price_ship': total_price + shipping_price,
-            'total_price': total_price,
-            'shipping_price': shipping_price,
-        }
-        return render(request, 'vegetable_web/cart.html', context)
+        if request.user.is_authenticated:
+            product = Product.objects.get(id=id)
+            user = request.user
+            Cart.objects.create(product=product, user=user)
+            total_price = 0
+            shipping_price = 0
+            for cart_product in Cart.objects.filter(user=request.user, payment_status=False):
+                total_price += cart_product.product.price
+                shipping_price = cart_product.shipping_price
+            cart = Cart.objects.filter(user=request.user)
+            number_order = cart.count()
+            context = {
+                'product': product,
+                'cart': cart,
+                'number_order': number_order,
+                'total_price_ship': total_price + shipping_price,
+                'total_price': total_price,
+                'shipping_price': shipping_price,
+            }
+            return render(request, 'vegetable_web/cart.html', context)
+        else:
+            return render(request, 'vegetable_web/cart.html')
 
     def post(self, request, id):
         product = Product.objects.get(id=id)
@@ -115,10 +118,10 @@ class CartView(View):
             cart_item.delete()
         total_price = 0
         shipping_price = 0
-        for cart_product in Cart.objects.filter(user=request.user.id):
+        for cart_product in Cart.objects.filter(user=request.user, payment_status=False):
             total_price += cart_product.product.price
             shipping_price = cart_product.shipping_price
-        cart = Cart.objects.filter(user=request.user.id)
+        cart = Cart.objects.filter(user=request.user)
         number_order = cart.count()
         context = {
             'product': product,

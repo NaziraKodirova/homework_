@@ -1,5 +1,6 @@
+
 from django.urls import path, include
-from .views import ArtistAPIViewSet, AlbumAPIViewSet, SongsAPIViewSet
+from .views import CommentAPIViewSet, CategoryAPIViewSet, ProductAPIViewSet, CartAPIViewSet, BillingAPIViewSet
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views
 from rest_framework import permissions
@@ -8,20 +9,24 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Web Shop API",
+        title="SHOP FOOD API",
         default_version='v1',
-        description="Demo Web SHop API",
+        description="Demo SHOP FOOD API",
         terms_of_service='demo.com',
-        contact=openapi.Contact(email='nazira.kodirova@mail.com'),
+        contact=openapi.Contact(email='srmslogan6040@gmail.com'),
         license=openapi.License(name='demo service')
     ),
     public=True,
     permission_classes=(permissions.AllowAny, )
 )
+
 router = DefaultRouter()
-router.register('albums', viewset=AlbumAPIViewSet)
-router.register('artists', viewset=ArtistAPIViewSet)
-router.register('songs', viewset=SongsAPIViewSet)
+router.register('comments', viewset=CommentAPIViewSet)
+router.register('category', viewset=CategoryAPIViewSet)
+router.register('products', viewset=ProductAPIViewSet)
+router.register('cart', viewset=CartAPIViewSet)
+router.register('billing', viewset=BillingAPIViewSet)
+
 
 urlpatterns = [
     path('', include(router.urls)),

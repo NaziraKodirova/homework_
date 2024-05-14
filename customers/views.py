@@ -3,12 +3,13 @@ from django.views import View
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
 from products.models import Category, Comment, Product, Cart
 
 class LandingPageView(View):
     def get(self, request):
+       if request.user.is_authenticated:
         search = request.GET.get('search')
-        print(search)
         if not search:
             categories = Category.objects.all()
             products = Product.objects.all()
@@ -30,8 +31,8 @@ class LandingPageView(View):
             }
             return render(request, 'vegetable_web/index.html', context)
         else:
-            categories = Category.objects.filter(title__icontains=search)
-            products = Product.objects.filter(title__icontains=search)
+            categories = Category.objects.filter(title_icontains=search)
+            products = Product.objects.filter(title_icontains=search)
             comments = Comment.objects.all()
             cart = Cart.objects.filter(user=request.user.id)
             users = User.objects.filter(is_active=True)
@@ -40,8 +41,8 @@ class LandingPageView(View):
             number_customer = users.count()
             a = 1
             context = {
-                'categories': categories,
                 'products': products,
+                'categories': categories,
                 'comments': comments,
                 'number_order': number_order,
                 'number_product': number_product,
@@ -94,14 +95,14 @@ class UserRegisterView(View):
             user.save()
             return redirect('login')
 
-class ContactView(View):
+class ContactView(LoginRequiredMixin, View):
     def get(self, request):
         a = 1
         cart = Cart.objects.filter(user=request.user.id)
         number_order = cart.count()
         return render(request, 'vegetable_web/contact.html', {'a': a, 'number_order': number_order})
 
-class ProfileView(View):
+class ProfileView(LoginRequiredMixin, View):
     def get(self, request):
         if request.user.is_authenticated:
             user = User.objects.get(username=request.user.username)
