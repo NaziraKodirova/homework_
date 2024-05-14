@@ -1,4 +1,3 @@
-
 from rest_framework.views import APIView
 from rest_framework import status, filters
 from rest_framework.response import Response
@@ -14,13 +13,13 @@ from django.db.transaction import atomic
 from rest_framework.decorators import action
 from datetime import datetime
 
-
 class CommentAPIViewSet(ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    #authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ['text', 'id', 'customer__first_name', 'customer__last_name', 'customer__username']
+    search_fields = ['text', 'id', 'customer_first_name', 'customer_last_name', 'customer_username']
     pagination_classes = LimitOffsetPagination
 
     @action(detail=True, methods=['get'])
@@ -39,7 +38,7 @@ class CommentAPIViewSet(ModelViewSet):
     @action(detail=False, methods=['get'])
     def today_comment(self, request, *args, **kwargs):
         comments = self.get_queryset()
-        comments = comments.filter(created_date__icontains=datetime.now().date())
+        comments = comments.filter(created_date_icontains=datetime.now().date())
         serializer = CommentSerializer(comments, many=True)
         return Response(data=serializer.data)
 
@@ -47,6 +46,7 @@ class CommentAPIViewSet(ModelViewSet):
 class CategoryAPIViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    #authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ['title', 'created_date']
@@ -79,9 +79,10 @@ class CategoryAPIViewSet(ModelViewSet):
 class ProductAPIViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    #authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ['title', 'description', 'manufacturer_name', 'category__title', 'category__national', 'price', 'price_type', 'rating', 'max_weight', 'comments__text', 'comments__customer__username']
+    search_fields = ['title', 'description', 'manufacturer_name', 'category_title', 'category_national', 'price', 'price_type', 'rating', 'max_weight', 'comments_text', 'comments_customer_username']
     pagination_class = LimitOffsetPagination
 
     @action(detail=False, methods=['get'])
@@ -124,9 +125,10 @@ class ProductAPIViewSet(ModelViewSet):
 class CartAPIViewSet(ModelViewSet):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
+    #authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ['product__title', 'product__category__title', 'product__price', 'product__rating', 'product_number', 'product__comments__customer__username']
+    search_fields = ['product__title', 'product_category_title', 'product_price', 'product_rating', 'product_number', 'product_comments_customer_username']
     pagination_class = LimitOffsetPagination
 
     @action(detail=True, methods=['get'])
@@ -154,9 +156,10 @@ class CartAPIViewSet(ModelViewSet):
 class BillingAPIViewSet(ModelViewSet):
     queryset = Billing.objects.all()
     serializer_class = BillingSerializer
+    #authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ['cart__id', 'user__last_name', 'user__username', 'cart__total_price', 'cart__product__title', 'price_type']
+    search_fields = ['cart_id', 'user_last_name', 'user_username', 'cart_total_price', 'cart_product_title', 'price_type']
     pagination_class = LimitOffsetPagination
 
     @action(detail=False, methods=['get'])
